@@ -3,56 +3,93 @@ import java.util.*;
 
 public class App {
     public static void main(String[] args) {
-        // Caminho do arquivo de entrada
-        String inputFile = "C:\\Users\\vinic\\Área de Trabalho\\projetos\\Analise-de-Memoria-RAM\\arq.txt";  // Substitua pelo caminho correto do arquivo
+        // Força o uso do ponto como separador decimal
+        Locale.setDefault(Locale.US);
 
-        // Lê os dados do arquivo e armazena-os em um ArrayList
-        List<Integer> dataList = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                dataList.add(Integer.parseInt(line.trim()));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;  // Se houver erro na leitura do arquivo, sai da execução
-        }
+        // Caminho do arquivo
+        String inputFile = "C:\\Users\\vinic\\Área de Trabalho\\projetos\\Analise-de-Memoria-RAM\\arq.txt";
 
-        // Converte o ArrayList para um array primitivo
-        int[] data = dataList.stream().mapToInt(i -> i).toArray();
+        // Exibe informações sobre o ambiente
+        System.out.println("Linguagem: Java");
+        System.out.println("Versão da JVM: " + System.getProperty("java.version"));
+        System.out.println("Sistema Operacional: " + System.getProperty("os.name") + " " + System.getProperty("os.version"));
+        System.out.println("Arquitetura do SO: " + System.getProperty("os.arch"));
+        System.out.println("Processador: " + System.getenv("PROCESSOR_IDENTIFIER"));
+        System.out.println("Memória RAM Total: " + Runtime.getRuntime().totalMemory() / 1024 + " KB");
+
+        // Lê números do arquivo
+        int[] data = readNumbersFromFile(inputFile);
 
         // Início da medição de tempo
         long startTime = System.nanoTime();
 
         // Medição de memória
         Runtime runtime = Runtime.getRuntime();
-        runtime.gc(); // Sugere a coleta de lixo antes de medir
+        runtime.gc(); // Sugere coleta de lixo antes de medir
         long usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
 
-        // Chama o método de ordenação BubbleSort
+        // Chama o Bubble Sort
         BubbleSort.sort(data);
-
-        // Exibe o array ordenado
-        System.out.print("Array ordenado: ");
-        System.out.print("[ ");
-        for (int num : data) {
-            System.out.print(num + " ");
-        }
-        System.out.print("]");
 
         // Fim da medição de tempo
         long endTime = System.nanoTime();
         long durationNano = endTime - startTime; // Tempo total em nanossegundos
-
-        // Converte de nanossegundos para segundos
-        double durationSec = durationNano / 1_000_000_000.0;  // Garantir que a conversão para segundos seja feita corretamente
+        double durationMs = durationNano / 1_000_000.0; // Tempo em milissegundos
 
         // Medição de memória após a execução
         long usedMemoryAfter = runtime.totalMemory() - runtime.freeMemory();
+        long memoryUsedKB = (usedMemoryAfter - usedMemoryBefore) / 1024; // Memória usada em KB
 
         // Exibe os resultados
-        System.out.println();
-        System.out.println("Tempo de execução: " + String.format("%.6f", durationSec) + " segundos");  // Exibição correta em segundos
-        System.out.println("Memória usada: " + (usedMemoryAfter - usedMemoryBefore) + " bytes");
+        System.out.println("Tempo de execução: " + String.format("%.2f", durationMs) + " ms");
+        System.out.println("Memória usada: " + memoryUsedKB + " KB");
+
+        // Grava o array ordenado em um arquivo
+        String outputFile = "C:\\Users\\vinic\\Área de Trabalho\\projetos\\Analise-de-Memoria-RAM\\Bubble\\Java\\arq-saida.txt";
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
+            for (int num : data) {
+                bw.write(num + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Array ordenado salvo em: " + outputFile);
+    }
+
+    // Função para ler números de um arquivo
+    public static int[] readNumbersFromFile(String filename) {
+        List<Integer> numbers = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                numbers.add(Integer.parseInt(line.trim())); // Adiciona o número ao array
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Converte a lista para um array
+        int[] result = new int[numbers.size()];
+        for (int i = 0; i < numbers.size(); i++) {
+            result[i] = numbers.get(i);
+        }
+        return result;
+    }
+}
+
+// Classe BubbleSort
+class BubbleSort {
+    public static void sort(int[] array) {
+        int n = array.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (array[j] > array[j + 1]) {
+                    // Troca os elementos
+                    int temp = array[j];
+                    array[j] = array[j + 1];
+                    array[j + 1] = temp;
+                }
+            }
+        }
     }
 }

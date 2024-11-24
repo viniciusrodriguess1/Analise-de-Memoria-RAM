@@ -1,44 +1,59 @@
 import java.io.*;
 import java.util.*;
+import java.util.Locale;
 
 public class App {
     public static void main(String[] args) {
+        // Força o uso do ponto como separador decimal
+        Locale.setDefault(Locale.US);
+
         // Caminho do arquivo
-        String inputFile = "C:\\Users\\vinic\\Área de Trabalho\\projetos\\Analise-de-Memoria-RAM\\arq.txt"; // Ajuste o caminho conforme necessário
+        String inputFile = "C:\\Users\\vinic\\Área de Trabalho\\projetos\\Analise-de-Memoria-RAM\\arq.txt";
+
+        // Exibe informações sobre o ambiente
+        System.out.println("Linguagem: Java");
+        System.out.println("Versão da JVM: " + System.getProperty("java.version"));
+        System.out.println("Sistema Operacional: " + System.getProperty("os.name") + " " + System.getProperty("os.version"));
+        System.out.println("Arquitetura do SO: " + System.getProperty("os.arch"));
+        System.out.println("Processador: " + System.getenv("PROCESSOR_IDENTIFIER"));
+        System.out.println("Memória RAM Total: " + Runtime.getRuntime().totalMemory() / 1024 + " KB");
+
+        // Lê números do arquivo
+        int[] data = readNumbersFromFile(inputFile);
 
         // Início da medição de tempo
         long startTime = System.nanoTime();
-        Runtime runtime = Runtime.getRuntime();
-        runtime.gc(); // Sugerir coleta de lixo antes de medir
-        long usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
 
-        // Lê números do arquivo e os coloca no array
-        int[] data = readNumbersFromFile(inputFile);
+        // Medição de memória
+        Runtime runtime = Runtime.getRuntime();
+        runtime.gc(); // Sugere coleta de lixo antes de medir
+        long usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
 
         // Chama o QuickSort
         Quick.quickSort(data, 0, data.length - 1);
 
-        // Exibe o array ordenado
-        System.out.print("Array ordenado: ");
-        System.out.print("[ ");
-        for (int num : data) {
-            System.out.print(num + " ");
-        }
-        System.out.println("]");
-
         // Fim da medição de tempo
         long endTime = System.nanoTime();
         long durationNano = endTime - startTime; // Tempo total em nanossegundos
-
-        // Converte o tempo de execução para segundos
-        double durationSec = durationNano / 1_000_000_000.0;
+        double durationMs = durationNano / 1_000_000.0; // Tempo em milissegundos
 
         // Medição de memória após a execução
         long usedMemoryAfter = runtime.totalMemory() - runtime.freeMemory();
-
+        long memoryUsedKB = (usedMemoryAfter - usedMemoryBefore) / 1024; // Memória usada em KB
         // Exibe os resultados
-        System.out.println("Tempo de execução: " + String.format("%.6f", durationSec) + " segundos");
-        System.out.println("Memória usada: " + (usedMemoryAfter - usedMemoryBefore) + " bytes");
+        System.out.println("Tempo de execução: " + String.format("%.2f", durationMs) + " ms");
+        System.out.println("Memória usada: " + memoryUsedKB + " KB");
+
+        // Grava o array ordenado em um arquivo
+        String outputFile = "C:\\Users\\vinic\\Área de Trabalho\\projetos\\Analise-de-Memoria-RAM\\Quick\\Java\\arq-saida.txt";
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
+            for (int num : data) {
+                bw.write(num + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Array ordenado salvo em: " + outputFile);
     }
 
     // Função para ler números de um arquivo
