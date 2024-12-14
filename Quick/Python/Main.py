@@ -30,7 +30,7 @@ def process_data(filename):
     return quicksort(array)
 
 if __name__ == '__main__':
-    input_file = r'C:\Users\vinic\Área de Trabalho\projetos\Analise-de-Memoria-RAM\arq.txt'
+    input_file = r'C:\Users\vinic\Área de Trabalho\projetos\Analise-de-Memoria-RAM\arq-desafio.txt'
     output_file = r'C:\Users\vinic\Área de Trabalho\projetos\Analise-de-Memoria-RAM\Quick\Python\arq-saida.txt'
 
     # Informações da linguagem

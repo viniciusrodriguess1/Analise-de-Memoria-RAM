@@ -8,7 +8,7 @@ public class App {
         Locale.setDefault(Locale.US);
 
         // Caminho do arquivo
-        String inputFile = "C:\\Users\\vinic\\Área de Trabalho\\projetos\\Analise-de-Memoria-RAM\\arq.txt";
+        String inputFile = "C:\\Users\\vinic\\Área de Trabalho\\projetos\\Analise-de-Memoria-RAM\\arq-desafio.txt";
 
         // Exibe informações sobre o ambiente
         System.out.println("Linguagem: Java");
